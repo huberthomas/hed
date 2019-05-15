@@ -10,7 +10,7 @@
 #include <vector>
 #include <cstdlib>
 
-#include "caffe/data_layers.hpp"
+#include "caffe/layers/image_labelmap_data_layer.hpp"
 #include "caffe/layer.hpp"
 #include "caffe/util/benchmark.hpp"
 #include "caffe/util/io.hpp"
