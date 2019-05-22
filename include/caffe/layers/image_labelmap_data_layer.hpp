@@ -23,10 +23,10 @@ namespace caffe {
  * TODO(dox): thorough documentation for Forward and proto params.
  */
 template <typename Dtype>
-class ImageLabelmapDataLayer : public BasePrefetchingLabelmapDataLayer<Dtype> {
+class ImageLabelmapDataLayer : public BasePrefetchingDataLayer<Dtype> {
  public:
   explicit ImageLabelmapDataLayer(const LayerParameter& param)
-      : BasePrefetchingLabelmapDataLayer<Dtype>(param) {}
+      : BasePrefetchingDataLayer<Dtype>(param) {}
   virtual ~ImageLabelmapDataLayer();
   virtual void DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
@@ -38,7 +38,7 @@ class ImageLabelmapDataLayer : public BasePrefetchingLabelmapDataLayer<Dtype> {
  protected:
   shared_ptr<Caffe::RNG> prefetch_rng_;
   virtual void ShuffleImages();
-  virtual void load_batch(LabelmapBatch<Dtype>* batch);
+  virtual void load_batch(Batch<Dtype>* batch);
 
   vector<std::pair<std::string, std::string> > lines_;
   int lines_id_;

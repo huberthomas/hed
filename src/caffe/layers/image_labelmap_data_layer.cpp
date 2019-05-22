@@ -101,7 +101,7 @@ void ImageLabelmapDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& b
   top_shape_labelmap[0] = batch_size;
   for (int i = 0; i < this->PREFETCH_COUNT; ++i) {
     this->prefetch_[i].data_.Reshape(top_shape);
-    this->prefetch_[i].labelmap_.Reshape(top_shape_labelmap);
+    this->prefetch_[i].label_.Reshape(top_shape_labelmap);
   }
   top[0]->Reshape(top_shape);
   top[1]->Reshape(top_shape_labelmap);
@@ -123,14 +123,14 @@ void ImageLabelmapDataLayer<Dtype>::ShuffleImages() {
 
 // This function is called on prefetch thread
 template <typename Dtype>
-void ImageLabelmapDataLayer<Dtype>::load_batch(LabelmapBatch<Dtype>* batch) {
+void ImageLabelmapDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   CPUTimer batch_timer;
   batch_timer.Start();
   double read_time = 0;
   double trans_time = 0;
   CPUTimer timer;
   CHECK(batch->data_.count());
-  CHECK(batch->labelmap_.count());
+  CHECK(batch->label_.count());
   CHECK(this->transformed_data_.count());
   CHECK(this->transformed_labelmap_.count());
   ImageDataParameter image_data_param = this->layer_param_.image_data_param();
@@ -158,10 +158,10 @@ void ImageLabelmapDataLayer<Dtype>::load_batch(LabelmapBatch<Dtype>* batch) {
   top_shape_labelmap[0] = batch_size;
   
   batch->data_.Reshape(top_shape);
-  batch->labelmap_.Reshape(top_shape_labelmap);
+  batch->label_.Reshape(top_shape_labelmap);
 
   Dtype* prefetch_data = batch->data_.mutable_cpu_data();
-  Dtype* prefetch_labelmap = batch->labelmap_.mutable_cpu_data();
+  Dtype* prefetch_labelmap = batch->label_.mutable_cpu_data();
 
   // datum scales
   const int lines_size = lines_.size();
@@ -199,7 +199,7 @@ void ImageLabelmapDataLayer<Dtype>::load_batch(LabelmapBatch<Dtype>* batch) {
     timer.Start();
     // Apply transformations (mirror, crop...) to the image
     int offset = batch->data_.offset(item_id);
-    int offset_gt = batch->labelmap_.offset(item_id);
+    int offset_gt = batch->label_.offset(item_id);
     //CHECK(offset == offset_gt) << "fetching should be synchronized";
     this->transformed_data_.set_cpu_data(prefetch_data + offset);
     this->transformed_labelmap_.set_cpu_data(prefetch_labelmap + offset_gt);
